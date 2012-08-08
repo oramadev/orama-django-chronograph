@@ -12,6 +12,7 @@ from django.utils.html import escape
 from django.utils.text import capfirst
 from django.utils import dateformat, formats
 from django.template.defaultfilters import linebreaks
+from django.contrib import messages
 
 from chronograph.models import Job, Log
 
@@ -134,7 +135,7 @@ class JobAdmin(admin.ModelAdmin):
         except Job.DoesNotExist:
             raise Http404
         job.run()
-        request.user.message_set.create(message=_('The job "%(job)s" was run successfully.') % {'job': job})
+        messages.success(request, 'The job "%(job)s" was run successfully.' % {'job': job})
 
         if 'inline' in request.GET:
             redirect = request.path + '../../'
