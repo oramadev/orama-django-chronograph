@@ -1,8 +1,12 @@
 from distutils.core import setup
+from distutils.command.install import INSTALL_SCHEMES
 import os
 
 app_name = 'django-chronograph'
 source_dir = 'src'
+
+for scheme in INSTALL_SCHEMES.values():
+    scheme['data'] = scheme['purelib']
 
 packages = []
 data_files = []
@@ -21,7 +25,7 @@ setup(
     url='https://github.com/tim-patterson/django-chronograph',
     author='Weston Nielson',
     author_email='wnielson@gmail.com',
-    packages = packages,
+    packages=packages,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
@@ -31,5 +35,5 @@ setup(
         'Programming Language :: Python',
         'Framework :: Django',
     ],
-    data_files = data_files
+    data_files=data_files
 )
