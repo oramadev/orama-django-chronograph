@@ -1,4 +1,4 @@
-https://buildhive.cloudbees.com/job/tim-patterson/job/django-chronograph/badge/icon
+[![Build Status](https://buildhive.cloudbees.com/job/tim-patterson/job/django-chronograph/badge/icon)](https://buildhive.cloudbees.com/job/tim-patterson/job/django-chronograph/)
 ======================
 My Fork of Chronograph
 ======================
