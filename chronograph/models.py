@@ -8,6 +8,7 @@ from dateutil import rrule
 from StringIO import StringIO
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import send_mail
@@ -23,7 +24,7 @@ class JobManager(models.Manager):
         """
         Returns a ``QuerySet`` of all jobs waiting to be run.
         """
-        return self.filter(next_run__lte=datetime.now(), disabled=False, is_running=False)
+        return self.filter(Q(next_run__lte=datetime.now(), disabled=False, is_running=False) | Q(adhoc_run=True, is_running=False))
 
 # A lot of rrule stuff is from django-schedule
 freqs = (   ("YEARLY", _("Yearly")),
@@ -55,6 +56,7 @@ class Job(models.Model):
         help_text=_("Space separated list; e.g: arg1 option1=True"))
     disabled = models.BooleanField(_("disabled"), default=False, help_text=_('If checked this job will never run.'))
     next_run = models.DateTimeField(_("next run"), blank=True, null=True, help_text=_("If you don't set this it will be determined automatically"))
+    adhoc_run = models.BooleanField(default=False)
     last_run = models.DateTimeField(_("last run"), editable=False, blank=True, null=True)
     is_running = models.BooleanField(_("Running?"), default=False, editable=False)
     last_run_successful = models.BooleanField(default=True, blank=False, null=False, editable=False)
@@ -111,7 +113,7 @@ class Job(models.Model):
         Returns the rrule objects for this Job.
         """
         frequency = getattr(rrule, self.frequency, rrule.DAILY)
-        return rrule.rrule(frequency, dtstart=self.last_run, **self.get_params())
+        return rrule.rrule(frequency, dtstart=self.next_run, **self.get_params())
     rrule = property(get_rrule)
 
     def get_params(self):
@@ -172,11 +174,12 @@ class Job(models.Model):
             # If stderr was written the job is not successful
             self.last_run_successful = not bool(stderr_str)
             self.is_running = False
+            self.adhoc_run = False
             self.save()
 
         if save:
-            self.last_run = run_date
             self.next_run = self.rrule.after(run_date)
+            self.last_run = run_date
             self.save()
 
         end_date = datetime.now()

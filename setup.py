@@ -3,7 +3,7 @@ from distutils.command.install import INSTALL_SCHEMES
 import os
 
 app_name = 'django-chronograph'
-source_dir = 'src'
+package_dir = 'chronograph'
 
 for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
@@ -11,16 +11,15 @@ for scheme in INSTALL_SCHEMES.values():
 packages = []
 data_files = []
 
-for dirpath, dirnames, filenames in os.walk(source_dir):
+for dirpath, dirnames, filenames in os.walk(package_dir):
     if '__init__.py' in filenames:
-        packages.append('.'.join(dirpath.split(os.sep)[1:]))
+        packages.append('.'.join(dirpath.split(os.sep)))
     elif filenames:
-        data_files.append([os.sep.join(dirpath.split(os.sep)[1:]), [os.path.join(dirpath, f) for f in filenames]])
+        data_files.append([os.sep.join(dirpath.split(os.sep)), [os.path.join(dirpath, f) for f in filenames]])
 
 setup(
     name=app_name,
     version='0.1.11',
-    package_dir={'':source_dir},
     description='Django chronograph application.',
     url='https://github.com/tim-patterson/django-chronograph',
     author='Weston Nielson',
