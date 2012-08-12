@@ -2,8 +2,11 @@
 ======================
 My Fork of Chronograph
 ======================
+This fork includes these changes:
+ - Adhoc jobs will be run by the cron job so the web ui doesn't block waiting on the job to finish
+ - Minor change to the way the next run is calculated, now calculated from the previous next run value
 
-So far, the change log includes:
+Other changes made by the upstream project(https://github.com/okke-formsma/django-chronograph) are:
  - A `last_run_sucessful` flag on the Job model
  - A `success` flag on the Log model
  - A `subscribers` field on the Job model (ManyToMany with django.contrib.auth.models.User)
@@ -30,21 +33,7 @@ Installing Chronograph
 ======================
 
 Installing ``chronograph`` is pretty simple.  First add it into ``INSTALLED_APPS``
-in your ``settings.py`` file.  If you're running a version of Django older than
-revision 9739 (basically anything after 1.0 but before 1.1), then you'll need to
-add the following to your project's ``urls.py``::
-  
-	url(r'^admin/chronograph/job/(?P<pk>\d+)/run/$',
-		'chronograph.views.job_run', name="chronograph_job_run"),
-
-NOTE: make sure you place this *BEFORE* the root admin site include.  Your
-``urls.py`` should then look something like::
-
-  ...
-  url(r'^admin/chronograph/job/(?P<pk>\d+)/run/$',
-	  'chronograph.views.job_run', name="admin_chronograph_job_run"),
-  ('^admin/(.*)', admin.site.root),
-  ...
+in your ``settings.py`` file.
 
 After this run `syncdb``.  The only thing left to do is set up a periodic call to
 run the jobs.
@@ -56,7 +45,7 @@ If you're using `cron`, the following example can be added to your `crontab`::
 You're done!  Every minute ``cron`` will check to see if you have any pending jobs
 and if you do they'll be run.  No more mucking about with your ``crontab``.
 
-If you have a more complicated setup where ``manange.py`` might not work by default
+If you have a more complicated setup where ``manage.py`` might not work by default
 see the section below on installing ``chronograph`` in a virtual environment.
 
 

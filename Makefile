@@ -8,11 +8,7 @@ endif
 
 bdist:
 	mkdir dist
-ifneq "$(BUILD_NUMBER)" ""
 	python setup.py bdist
-else
-	python setup.py bdist
-endif
 
 clean:
 	python setup.py clean

@@ -1,23 +1,36 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 #@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding field 'Log.end_date'
-        db.add_column('chronograph_log', 'end_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True), keep_default=False)
+        # Adding field 'Job.adhoc_run'
+        db.add_column('chronograph_job', 'adhoc_run',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
+                      keep_default=False)
 
+
+        # Changing field 'Log.end_date'
+        db.alter_column('chronograph_log', 'end_date', self.gf('django.db.models.fields.DateTimeField')(null=True))
+
+        # Changing field 'Log.run_date'
+        db.alter_column('chronograph_log', 'run_date', self.gf('django.db.models.fields.DateTimeField')())
 
     def backwards(self, orm):
-        
-        # Deleting field 'Log.end_date'
-        db.delete_column('chronograph_log', 'end_date')
+        # Deleting field 'Job.adhoc_run'
+        db.delete_column('chronograph_job', 'adhoc_run')
 
+
+        # Changing field 'Log.end_date'
+        db.alter_column('chronograph_log', 'end_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True))
+
+        # Changing field 'Log.run_date'
+        db.alter_column('chronograph_log', 'run_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
 
     models = {
         'auth.group': {
@@ -51,6 +64,7 @@ class Migration(SchemaMigration):
         },
         'chronograph.job': {
             'Meta': {'ordering': "('disabled', 'next_run')", 'object_name': 'Job'},
+            'adhoc_run': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'args': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'command': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'disabled': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -69,10 +83,10 @@ class Migration(SchemaMigration):
         },
         'chronograph.log': {
             'Meta': {'ordering': "('-run_date',)", 'object_name': 'Log'},
-            'end_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
+            'end_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'job': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['chronograph.Job']"}),
-            'run_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'run_date': ('django.db.models.fields.DateTimeField', [], {}),
             'stderr': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'stdout': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'success': ('django.db.models.fields.BooleanField', [], {'default': 'True'})

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
 import os
