@@ -134,8 +134,9 @@ class JobAdmin(admin.ModelAdmin):
             job = Job.objects.get(pk=pk)
         except Job.DoesNotExist:
             raise Http404
-        job.run()
-        messages.success(request, 'The job "%(job)s" was run successfully.' % {'job': job})
+        job.adhoc_run = True
+        job.save()
+        messages.success(request, 'The job "%(job)s" has been queued for running' % {'job': job.name})
 
         if 'inline' in request.GET:
             redirect = request.path + '../../'
