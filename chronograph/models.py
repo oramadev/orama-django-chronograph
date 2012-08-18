@@ -10,9 +10,7 @@ from StringIO import StringIO
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
 from django.utils.timesince import timeuntil
 from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
 from django.template import loader, Context
@@ -89,7 +87,9 @@ class Job(models.Model):
         Returns a string representing the time until the next
         time this Job will be run.
         """
-        if self.disabled:
+        if self.adhoc_run:
+            return _('ASAP')
+        elif self.disabled:
             return _('never (disabled)')
 
         delta = self.next_run - datetime.now()
@@ -219,7 +219,7 @@ class Job(models.Model):
         ostderr = sys.stderr
         sys.stdout = stdout
         sys.stderr = stderr
-        stdout_str, stderr_str, exception_str = "", "", ""
+        exception_str = ''
 
         try:
             call_command(self.command, *args, **options)
@@ -303,10 +303,7 @@ class Log(models.Model):
             info_output = self.stdout
         else:
             subscriber_set = self.job.subscribers.all()
-            info_output = "http://%(site)s%(path)s" % {
-                'site': Site.objects.get_current(),
-                'path': reverse("admin:chronograph_log_change", args=(self.id,)),
-            }
+            info_output = self.stderr
 
         for user in subscriber_set:
             subscribers.append('"%s" <%s>' % (user.get_full_name(), user.email))

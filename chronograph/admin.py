@@ -61,7 +61,7 @@ class JobAdmin(admin.ModelAdmin):
     actions = ['disable_jobs', 'reset_jobs']
     form = JobForm
     list_display = (
-        'job_success', 'name', 'last_run_with_link', 'next_run', 'get_timeuntil',
+        'job_success', 'name', 'last_run_with_link', 'next_run_', 'get_timeuntil',
         'frequency', 'is_running', 'run_button', 'view_logs_button',
     )
     list_display_links = ('name', )
@@ -92,8 +92,8 @@ class JobAdmin(admin.ModelAdmin):
         return queryset.update(is_running=False)
 
     def last_run_with_link(self, obj):
-        format = formats.get_format('DATETIME_FORMAT')
-        value = capfirst(dateformat.format(obj.last_run, format))
+        format_ = formats.get_format('DATETIME_FORMAT')
+        value = capfirst(dateformat.format(obj.last_run, format_))
 
         log_id = obj.log_set.latest('run_date').id
 
@@ -108,6 +108,17 @@ class JobAdmin(admin.ModelAdmin):
     last_run_with_link.allow_tags = True
     last_run_with_link.short_description = _('Last run')
     last_run_with_link.admin_order_field = 'last_run'
+    
+    def next_run_(self, obj):
+        if obj.adhoc_run:
+            return 'Immediate run scheduled'
+        else:
+            format_ = formats.get_format('DATETIME_FORMAT')
+            return capfirst(dateformat.format(obj.last_run, format_))
+    next_run_.short_description = _('Next run')
+    next_run_.admin_order_field = 'next_run'
+        
+    
 
     def job_success(self, obj):
         return obj.last_run_successful
@@ -115,8 +126,9 @@ class JobAdmin(admin.ModelAdmin):
     job_success.boolean = True
 
     def run_button(self, obj):
+        disabled = 'disabled="disabled" ' if obj.adhoc_run else ''
         on_click = "window.location='%d/run/?inline=1';" % obj.id
-        return '<input type="button" onclick="%s" value="Run" />' % on_click
+        return '<input type="button" onclick="%s" value="Run" %s/>' % (on_click, disabled)
     run_button.allow_tags = True
     run_button.short_description = _('Run')
 
