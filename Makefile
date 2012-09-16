@@ -1,4 +1,4 @@
-rpm:
+rpm: clean
 	mkdir dist
 ifneq "$(BUILD_NUMBER)" ""
 	python setup.py bdist_rpm --release=$(BUILD_NUMBER)
@@ -6,9 +6,9 @@ else
 	python setup.py bdist_rpm --release=0.`date +'%s'`.test
 endif
 
-bdist:
+upload: clean
 	mkdir dist
-	python setup.py bdist
+	python setup.py sdist bdist upload -r tim
 
 clean:
 	python setup.py clean
