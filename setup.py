@@ -20,7 +20,7 @@ for dirpath, dirnames, filenames in os.walk(package_dir):
 
 setup(
     name=app_name,
-    version='0.1.11',
+    version='0.1.12',
     description='Django chronograph application.',
     url='https://github.com/tim-patterson/django-chronograph',
     author='Weston Nielson',
