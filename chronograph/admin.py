@@ -1,23 +1,22 @@
-from django.contrib import admin
-from django.db import models
+from .models import Job, Log
 from django import forms
-from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect, Http404
 from django.conf.urls import patterns, url
+from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
-from django.forms.util import flatatt
+from django.db import models
 from django.forms import Textarea
-from django.utils.html import escape
-from django.utils.text import capfirst
-from django.utils import dateformat, formats
+from django.forms.util import flatatt
+from django.http import HttpResponseRedirect, Http404
 from django.template.defaultfilters import linebreaks
-from django.contrib import messages
+from django.utils import dateformat, formats
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+from django.utils.text import capfirst
+from django.utils.translation import ugettext_lazy as _
 
-from chronograph.models import Job, Log
 
 class HTMLWidget(forms.Widget):
-    def __init__(self,rel=None, attrs=None):
+    def __init__(self, rel=None, attrs=None):
         self.rel = rel
         super(HTMLWidget, self).__init__(attrs)
 
@@ -64,10 +63,10 @@ class JobAdmin(admin.ModelAdmin):
         'job_success', 'name', 'last_run_with_link', 'next_run_', 'get_timeuntil',
         'frequency', 'is_running', 'run_button', 'view_logs_button',
     )
-    list_display_links = ('name', )
+    list_display_links = ('name',)
     list_filter = ('last_run_successful', 'frequency', 'disabled')
-    search_fields = ('name', )
-    ordering = ('last_run', )
+    search_fields = ('name',)
+    ordering = ('last_run',)
     filter_horizontal = ('subscribers', 'info_subscribers')
 
     fieldsets = (
@@ -108,7 +107,7 @@ class JobAdmin(admin.ModelAdmin):
     last_run_with_link.allow_tags = True
     last_run_with_link.short_description = _('Last run')
     last_run_with_link.admin_order_field = 'last_run'
-    
+
     def next_run_(self, obj):
         if obj.adhoc_run:
             return 'Immediate run scheduled'
@@ -117,8 +116,8 @@ class JobAdmin(admin.ModelAdmin):
             return capfirst(dateformat.format(obj.last_run, format_))
     next_run_.short_description = _('Next run')
     next_run_.admin_order_field = 'next_run'
-        
-    
+
+
 
     def job_success(self, obj):
         return obj.last_run_successful
@@ -165,7 +164,7 @@ class JobAdmin(admin.ModelAdmin):
         return my_urls + urls
 
 class LogAdmin(admin.ModelAdmin):
-    list_display = ('job_name', 'run_date', 'end_date', 'job_duration', 'job_success', 'output', 'errors', )
+    list_display = ('job_name', 'run_date', 'end_date', 'job_duration', 'job_success', 'output', 'errors',)
     search_fields = ('stdout', 'stderr', 'job__name', 'job__command')
     date_hierarchy = 'run_date'
     fieldsets = (
