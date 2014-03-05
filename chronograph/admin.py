@@ -113,7 +113,7 @@ class JobAdmin(admin.ModelAdmin):
             return 'Immediate run scheduled'
         else:
             format_ = formats.get_format('DATETIME_FORMAT')
-            return capfirst(dateformat.format(obj.last_run, format_))
+            return capfirst(dateformat.format(obj.next_run, format_))
     next_run_.short_description = _('Next run')
     next_run_.admin_order_field = 'next_run'
 
