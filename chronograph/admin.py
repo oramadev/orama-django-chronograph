@@ -91,6 +91,8 @@ class JobAdmin(admin.ModelAdmin):
         return queryset.update(is_running=False)
 
     def last_run_with_link(self, obj):
+        if not obj.last_run:
+            return None
         format_ = formats.get_format('DATETIME_FORMAT')
         value = capfirst(dateformat.format(obj.last_run, format_))
 
@@ -111,6 +113,8 @@ class JobAdmin(admin.ModelAdmin):
     def next_run_(self, obj):
         if obj.adhoc_run:
             return 'Immediate run scheduled'
+        elif not obj.next_run:
+            return 'Not scheduled'
         else:
             format_ = formats.get_format('DATETIME_FORMAT')
             return capfirst(dateformat.format(obj.next_run, format_))
