@@ -3,13 +3,14 @@ from dateutil import rrule
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 from django.template import loader, Context
 from django.utils.encoding import smart_str
 from django.utils.timesince import timeuntil
 from django.utils.timezone import now as tz_now
 from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
+import logging
 import shlex
 import subprocess
 import sys
@@ -220,11 +221,15 @@ class Job(models.Model):
         exception_str = ''
 
         try:
-            call_command(self.command, *args, **options)
-            success = True
+            with transaction.atomic():
+                call_command(self.command, *args, **options)
+                success = True
         except Exception, e:
-            exception_str = self._get_exception_string(e, sys.exc_info())
             success = False
+            exception_str = self._get_exception_string(e, sys.exc_info())
+            job_exception_logger = logging.getLogger('chronograph.exception')
+            job_exception_logger.error(u"Job Error: %s (%s)", self.name, self.command,
+                                         exc_info=sys.exc_info(), extra={'job': self})
 
         sys.stdout = ostdout
         sys.stderr = ostderr
