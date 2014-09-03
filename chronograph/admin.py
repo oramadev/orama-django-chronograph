@@ -57,7 +57,7 @@ class JobForm(forms.ModelForm):
         return cleaned_data
 
 class JobAdmin(admin.ModelAdmin):
-    actions = ['disable_jobs', 'reset_jobs']
+    actions = ['disable_jobs', 'enable_jobs', 'reset_jobs']
     form = JobForm
     list_display = (
         'job_success', 'name', 'last_run_with_link', 'next_run_', 'get_timeuntil',
@@ -83,6 +83,9 @@ class JobAdmin(admin.ModelAdmin):
             'fields': ('frequency', 'next_run', 'params',)
         }),
     )
+
+    def enable_jobs(self, request, queryset):
+        return queryset.update(disabled=False)
 
     def disable_jobs(self, request, queryset):
         return queryset.update(disabled=True)
