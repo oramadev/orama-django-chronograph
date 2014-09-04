@@ -52,6 +52,7 @@ class Job(models.Model):
     args = models.CharField(_("args"), max_length=200, blank=True,
         help_text=_("Space separated list; e.g: arg1 option1=True"))
     disabled = models.BooleanField(_("disabled"), default=False, help_text=_('If checked this job will never run.'))
+    atomic = models.BooleanField(_("atomic"), default=True, help_text=_('If checked, the command is run wrapped in a database transaction, using Djano\'s atomic context manager.'))
     next_run = models.DateTimeField(_("next run"), blank=True, null=True, help_text=_("If you don't set this it will be determined automatically"))
     adhoc_run = models.BooleanField(default=False)
     last_run = models.DateTimeField(_("last run"), editable=False, blank=True, null=True)
@@ -221,9 +222,13 @@ class Job(models.Model):
         exception_str = ''
 
         try:
-            with transaction.atomic():
+            if self.atomic:
+                with transaction.atomic():
+                    call_command(self.command, *args, **options)
+            else:
                 call_command(self.command, *args, **options)
-                success = True
+            success = True
+
         except Exception, e:
             success = False
             exception_str = self._get_exception_string(e, sys.exc_info())

@@ -31,7 +31,7 @@ except IOError:
 description='Chronograph, a Django library for managing scheduled tasks (version mantained by Inoa)'
 setup(
     name=app_name,
-    version='0.1.24',
+    version='0.1.25',
     description=description,
     long_description=long_description or description,
     url='https://github.com/joaofrancese/django-chronograph',

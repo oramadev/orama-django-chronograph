@@ -60,7 +60,7 @@ class JobAdmin(admin.ModelAdmin):
     actions = ['disable_jobs', 'enable_jobs', 'reset_jobs']
     form = JobForm
     list_display = (
-        'job_success', 'name', 'last_run_with_link', 'next_run_', 'get_timeuntil',
+        'job_success', '_enabled', 'name', 'last_run_with_link', 'next_run_', 'get_timeuntil',
         'frequency', 'is_running', 'run_button', 'view_logs_button',
     )
     list_display_links = ('name',)
@@ -72,7 +72,7 @@ class JobAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('Job Details'), {
             'classes': ('wide',),
-            'fields': ('name', 'command', 'shell_command', 'run_in_shell', 'args', 'disabled',)
+            'fields': ('name', 'disabled', 'command', 'shell_command', 'run_in_shell', 'args', 'atomic',)
         }),
         (_('E-mail subscriptions'), {
             'classes': ('wide',),
@@ -92,6 +92,12 @@ class JobAdmin(admin.ModelAdmin):
 
     def reset_jobs(self, request, queryset):
         return queryset.update(is_running=False)
+
+    def _enabled(self, obj):
+        return not obj.disabled
+    _enabled.short_description = _('Enabled')
+    _enabled.admin_order_field = 'disabled'
+    _enabled.boolean = True
 
     def last_run_with_link(self, obj):
         if not obj.last_run:
