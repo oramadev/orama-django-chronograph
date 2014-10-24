@@ -91,6 +91,8 @@ class Job(models.Model):
             return _('ASAP')
         elif self.disabled:
             return _('never (disabled)')
+        elif not self.next_run:
+            return "-"
 
         delta = self.next_run - tz_now()
         if delta.days < 0:

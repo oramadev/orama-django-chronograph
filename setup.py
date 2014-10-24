@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
+import chronograph
 import os
 
 app_name = 'django-inoa-chronograph'
@@ -31,7 +32,7 @@ except IOError:
 description='Chronograph, a Django library for managing scheduled tasks (version mantained by Inoa)'
 setup(
     name=app_name,
-    version='0.1.25',
+    version=chronograph.__version__,
     description=description,
     long_description=long_description or description,
     url='https://github.com/joaofrancese/django-chronograph',
