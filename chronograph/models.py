@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from StringIO import StringIO
 from dateutil import rrule
 from django.conf import settings
@@ -349,7 +351,7 @@ ERROR OUTPUT
 INFORMATIONAL OUTPUT
 ********************************************************************************
 %(info_output)s
-""" % {'info_output': info_output}
+""" % {'info_output': info_output.decode('utf-8', 'ignore')}
 
         send_mail(
             from_email='"%s" <%s>' % (settings.EMAIL_SENDER, settings.EMAIL_HOST_USER),
