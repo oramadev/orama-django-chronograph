@@ -171,6 +171,8 @@ class Job(models.Model):
                 stdout_str, stderr_str, success = self.run_shell_command()
             else:
                 stdout_str, stderr_str, success = self.run_management_command()
+        except:
+            success = False
         finally:
             # since jobs can be long running, reload the object to pick up
             # any updates to the object since the job started
