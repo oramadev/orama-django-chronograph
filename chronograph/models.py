@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from StringIO import StringIO
 from dateutil import rrule
 from django.conf import settings
@@ -169,6 +171,8 @@ class Job(models.Model):
                 stdout_str, stderr_str, success = self.run_shell_command()
             else:
                 stdout_str, stderr_str, success = self.run_management_command()
+        except:
+            success = False
         finally:
             # since jobs can be long running, reload the object to pick up
             # any updates to the object since the job started
@@ -322,7 +326,7 @@ class Log(models.Model):
         for user in subscriber_set:
             subscribers.append('"%s" <%s>' % (user.get_full_name(), user.email))
 
-        message_body = """
+        message_body = u"""
 ********************************************************************************
 JOB NAME: %(job_name)s
 RUN DATE: %(run_date)s
@@ -337,19 +341,19 @@ SUCCESSFUL: %(success)s
 }
 
         if not self.success:
-            message_body += """
+            message_body += u"""
 ********************************************************************************
 ERROR OUTPUT
 ********************************************************************************
 %(error_output)s
 """ % {'error_output': self.stderr}
 
-        message_body += """
+        message_body += u"""
 ********************************************************************************
 INFORMATIONAL OUTPUT
 ********************************************************************************
 %(info_output)s
-""" % {'info_output': info_output}
+""" % {'info_output': unicode(info_output, 'utf8')}
 
         send_mail(
             from_email='"%s" <%s>' % (settings.EMAIL_SENDER, settings.EMAIL_HOST_USER),
