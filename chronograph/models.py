@@ -339,6 +339,10 @@ SUCCESSFUL: %(success)s
     'end_date': self.end_date,
     'success': self.success,
 }
+        try:
+            info_output = unicode(info_output, 'utf8')
+        except:
+            pass
 
         if not self.success:
             message_body += u"""
@@ -353,7 +357,7 @@ ERROR OUTPUT
 INFORMATIONAL OUTPUT
 ********************************************************************************
 %(info_output)s
-""" % {'info_output': unicode(info_output, 'utf8')}
+""" % {'info_output': info_output}
 
         send_mail(
             from_email='"%s" <%s>' % (settings.EMAIL_SENDER, settings.EMAIL_HOST_USER),
