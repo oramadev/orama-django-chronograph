@@ -326,7 +326,7 @@ class Log(models.Model):
         for user in subscriber_set:
             subscribers.append('"%s" <%s>' % (user.get_full_name(), user.email))
 
-        message_body = """
+        message_body = u"""
 ********************************************************************************
 JOB NAME: %(job_name)s
 RUN DATE: %(run_date)s
@@ -341,19 +341,19 @@ SUCCESSFUL: %(success)s
 }
 
         if not self.success:
-            message_body += """
+            message_body += u"""
 ********************************************************************************
 ERROR OUTPUT
 ********************************************************************************
 %(error_output)s
 """ % {'error_output': self.stderr}
 
-        message_body += """
+        message_body += u"""
 ********************************************************************************
 INFORMATIONAL OUTPUT
 ********************************************************************************
 %(info_output)s
-""" % {'info_output': info_output.decode('utf-8', 'ignore')}
+""" % {'info_output': unicode(info_output, 'utf8')}
 
         send_mail(
             from_email='"%s" <%s>' % (settings.EMAIL_SENDER, settings.EMAIL_HOST_USER),
