@@ -67,17 +67,13 @@ class JobAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('last_run_successful', 'frequency', 'disabled')
     search_fields = ('name',)
-    ordering = ('last_run',)
+    ordering = ('name',)
     filter_horizontal = ('subscribers', 'info_subscribers')
 
     fieldsets = (
         (_('Job Details'), {
             'classes': ('wide',),
             'fields': ('name', 'disabled', 'command', 'shell_command', 'run_in_shell', 'args', 'atomic',)
-        }),
-        (_('E-mail subscriptions'), {
-            'classes': ('wide',),
-            'fields': ('info_subscribers', 'subscribers',)
         }),
         (_('Frequency options'), {
             'classes': ('wide',),
