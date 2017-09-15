@@ -28,8 +28,8 @@ class HTMLWidget(forms.Widget):
             value = "<a href='%s'>%s</a>" % (related_url, escape(obj))
         else:
             value = escape(value)
-
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs['name'] = name
+        final_attrs = self.build_attrs(attrs)
         return mark_safe("<div%s>%s</div>" % (flatatt(final_attrs), linebreaks(value)))
 
 class JobForm(forms.ModelForm):
